@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Apps</title>
+    <link rel="stylesheet" href="feather-icons-web/feather.css">
+    <style>
+        :root{
+            --primary:#00c0fe;
+            --secondary:white;
+        }
+        ::placeholder { 
+        color: white;
+        }
+        *{
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        body{
+            background-color: rgb(250 248 248);
+        }
+        .container{
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .todo-box{
+            margin: 0 20px;
+            overflow: hidden;
+            width: 380px;
+            min-height: 600px;
+            background-color: var(--primary);
+            border-radius: 30px;
+            box-shadow: 0 .125rem .25rem rgba(0,0,0,.175)!important;
+        }
+        .todo-input{
+            margin:0px 30px;
+            padding:30px 0px; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .todo-input-field h2{
+           margin-bottom: 10px;
+           color: white;
+        }
+        .todo-input-field input{
+            height: 25px;
+            background-color: unset;
+            border: none;
+            outline: none;
+            font-size: .8rem;
+            padding-left: 7px;
+            border-left: 4px solid var(--secondary);
+            color: var(--secondary);
+        }
+        .todo-item-list{
+            padding:0px 30px;
+            min-height: 100%;
+            height: 500px;
+            overflow-y: auto;
+            border-radius: 30px 30px 0 0;
+
+        }
+        #todoBtn{
+            width: 70px;
+            height: 70px;
+            background-color: var(--secondary);
+            color: var(--primary);
+            border: none;
+            border-radius: 50%;
+            font-size: 2rem;
+            font-weight: bolder;   
+            outline: none;
+        }
+
+        .todo-item-list{
+            padding-top: 40px;
+            background-color: var(--secondary);
+        }
+        .todo-item{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .todo-item-text h4{
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        .todo-item-text p{
+            color: gray;
+            font-size: .7rem;
+        }
+        .todo-item-action button{
+            width: 30px;
+            height: 30px;
+            color: var(--primary);
+            border-radius: 5px;
+            background-color: unset;
+            outline: none;
+        }
+        #btnEdit{
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        #btnEdit:active, #btnEdit:hover{
+            background: var(--primary);
+            color: white;
+        }
+        #btnDelete{
+            border: 2px solid #dc3545;
+            color: #dc3545;
+        }
+        #btnDelete:active #btnDelete:hover{
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="todo-box">
+            <div class="todo-input">
+                <div class="todo-input-field">
+                    <h2>To Do List</h2>
+                    <input type="text" id="input" placeholder="Say Something. . . ." autofocus>
+                </div>
+                <button id="todoBtn" onclick="addList()"><i class="feather-plus"></i></button>
+            </div>
+            <div class="todo-item-list" id="list">
+                
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let minTextLength = 3;
+        let i = 1;
+        let month = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+        let input = document.getElementById("input");
+        let list = document.getElementById("list");
+    
+        function textFilter(x){
+            if(x){
+                
+                if(x.length >= minTextLength){
+    
+                    return x;
+    
+                }else{
+                    alert("Min Text Length is 3");
+                    return false;
+                }
+    
+            }else{
+                alert("Input Text Empty");
+                return false;
+            }
+        }
+    
+        function showList(text){
+        let d = new Date(); 
+        let code = d.getHours() > 12 ? "PM" : "AM";
+        let dateStr = d.getDate()+" "+month[d.getMonth()]+" "+d.getFullYear()+" at "+d.getHours()+":"+d.getMinutes()+" "+code;
+            list.innerHTML +=`<div class="todo-item" id="list${i}">
+                    <div class="todo-item-text">
+                        <h4 id="listText${i}">${text}</h4>
+                        <p>${dateStr}</p>
+                    </div>
+                    <div class="todo-item-action">
+                        <button id="btnEdit" onclick='editList(${i})'><i class="feather-edit"></i></button>
+                        <button id="btnDelete" onclick='deleteList(${i})'><i class="feather-trash"></i></button>
+                    </div>
+                </div>`;
+                i++;
+        }
+    
+        function deleteList(listId){
+    
+            let current = document.getElementById(`list${listId}`);
+            let currentText = document.getElementById(`listText${listId}`).innerHTML;
+            let deleteConfirm = confirm(`Are U Sure To Delete List '${currentText}'`);
+    
+            if(deleteConfirm){
+                list.removeChild(current);
+            }else{
+                console.log("Delete Cancel");
+            }
+        }
+    
+        function editList(listId){
+            let current = document.getElementById(`listText${listId}`);
+            let newText = prompt("Say Something",current.innerHTML);
+    
+            if(textFilter(newText)){
+                current.innerHTML = newText;
+            }
+        
+        }
+        
+        
+    
+        function addList() {
+            //get
+            let inputText = textFilter(input.value);
+    
+            if(inputText){
+                //set
+                showList(inputText);
+                input.value = "";
+            }
+        }
+    
+        input.addEventListener("keyup",function (e) {
+            if(e.keyCode == 13){
+                addList();
+            }
+        })
+    
+        
+        </script>
+</body>
+</html>
